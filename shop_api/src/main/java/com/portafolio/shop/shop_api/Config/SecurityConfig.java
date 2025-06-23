@@ -1,5 +1,7 @@
 package com.portafolio.shop.shop_api.Config;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.context.annotation.Bean;
@@ -30,5 +32,10 @@ public class SecurityConfig {
             )
             .httpBasic(withDefaults()); // OJO uso la basica por ahora luego se cambia por JWT
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }
