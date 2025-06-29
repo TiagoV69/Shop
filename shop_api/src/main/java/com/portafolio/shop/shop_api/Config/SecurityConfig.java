@@ -40,27 +40,23 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
     
-    @Bean
+      @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Deshabilitamos CSRF, común en APIs REST.
-            
-            // Definimos las reglas de autorización de las peticiones
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> authz
-                // Le decimos a Spring Security que permita todas las peticiones a /auth/**
-                .requestMatchers("/auth/**").permitAll() 
+                .requestMatchers(
+                    "/auth/**",
+                    "/swagger-ui.html",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/swagger-resources/**",
+                    "/webjars/**"
+                ).permitAll() 
                 // Para cualquier otra petición, el usuario debe estar autenticado
                 .anyRequest().authenticated() 
             )
-            
-        
-            // Le decimos a Spring que no cree ni gestione sesiones. Cada petición es independiente
-            // y debe ser autenticada con el token.
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            
-            // Añadimos nuestro filtro JWT
-            // Le decimos a Spring que use nuestro JwtAuthenticationFilter ANTES del filtro
-            // tradicional de usuario y contraseña. Nuestro filtro se encargará de validar el token.
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
